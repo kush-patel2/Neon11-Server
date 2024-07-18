@@ -1,46 +1,49 @@
-const Contact = require("../../models/ContactUs/Conatct");
-exports.createContact = async (req, res) => {
+
+const YTDesc = require("../../models/YTDesc/YTDesc");
+
+exports.createYTDesc = async (req, res) => {
   try {
-    const { contactno, address, email, gmaplink } = req.body;
-    const addContact = await new Contact(req.body).save();
-    console.log("create contact", addContact);
-    res.status(200).json({ isOk: true, data: addContact, message: "" });
+    console.log("Received request body:", req.body);
+    const { Title, subTitle, Desc, ytLink, IsActive } = req.body;
+    const addYTDesc = await new YTDesc({ Title, subTitle, Desc, ytLink, IsActive }).save();
+    console.log("create YTDesc", addYTDesc);
+    res.status(200).json({ isOk: true, data: addYTDesc, message: "" });
   } catch (err) {
-    res.status(200).json({ isOk: false, message: "Error creating contact" });
+    res.status(200).json({ isOk: false, message: "Error creating youtube description" });
   }
 };
 
-exports.getContact = async (req, res) => {
+exports.getYTDesc = async (req, res) => {
   try {
-    const find = await Contact.findOne({ _id: req.params._id }).exec();
+    const find = await YTDesc.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
     return res.status(500).send(error);
   }
 };
 
-exports.listContact = async (req, res) => {
+exports.listYTDesc = async (req, res) => {
   try {
-    const list = await Contact.find().sort({ createdAt: -1 }).exec();
+    const list = await YTDesc.find().sort({ createdAt: 1 }).exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listActiveContact = async (req, res) => {
+exports.listActiveYTDesc = async (req, res) => {
   try {
-    const list = await Contact.find({ IsActive: true })
-      .sort({ createdAt: -1 })
+    const list = await YTDesc.find({ IsActive: true })
+      .sort({ createdAt: 1 })
       .exec();
-    console.log("list avi", list);
+    console.log("list active ytdesc", list);
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listContactByParams = async (req, res) => {
+exports.listYTDescByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
 
@@ -89,7 +92,7 @@ exports.listContactByParams = async (req, res) => {
           $match: {
             $or: [
               {
-                Contact: { $regex: match, $options: "i" },
+                Title: { $regex: match, $options: "i" },
               },
             ],
           },
@@ -115,7 +118,7 @@ exports.listContactByParams = async (req, res) => {
       ].concat(query);
     }
 
-    const list = await Contact.aggregate(query);
+    const list = await YTDesc.aggregate(query);
 
     res.json(list);
   } catch (error) {
@@ -123,9 +126,9 @@ exports.listContactByParams = async (req, res) => {
   }
 };
 
-exports.updateContactMaster = async (req, res) => {
+exports.updateYTDescMaster = async (req, res) => {
   try {
-    const update = await Contact.findOneAndUpdate(
+    const update = await YTDesc.findOneAndUpdate(
       { _id: req.params._id },
       req.body,
       { new: true }
@@ -136,9 +139,9 @@ exports.updateContactMaster = async (req, res) => {
   }
 };
 
-exports.removeContactMaster = async (req, res) => {
+exports.removeYTDescMaster = async (req, res) => {
   try {
-    const delTL = await Contact.deleteOne({
+    const delTL = await YTDesc.deleteOne({
       _id: req.params._id,
     });
     res.json(delTL);

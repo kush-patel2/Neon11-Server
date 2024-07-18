@@ -1,46 +1,48 @@
-const Contact = require("../../models/ContactUs/Conatct");
-exports.createContact = async (req, res) => {
+
+const Visionmission = require("../../models/Visionmission/Visionmission");
+
+exports.createVisionmission = async (req, res) => {
   try {
-    const { contactno, address, email, gmaplink } = req.body;
-    const addContact = await new Contact(req.body).save();
-    console.log("create contact", addContact);
-    res.status(200).json({ isOk: true, data: addContact, message: "" });
+    const { vision, mission, value } = req.body;
+    const addVisionmission = await new Visionmission(req.body).save();
+    console.log("create vision mission value", addVisionmission);
+    res.status(200).json({ isOk: true, data: addVisionmission, message: "" });
   } catch (err) {
-    res.status(200).json({ isOk: false, message: "Error creating contact" });
+    res.status(200).json({ isOk: false, message: "Error creating vision mission" });
   }
 };
 
-exports.getContact = async (req, res) => {
+exports.getVisionmission = async (req, res) => {
   try {
-    const find = await Contact.findOne({ _id: req.params._id }).exec();
+    const find = await Visionmission.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
     return res.status(500).send(error);
   }
 };
 
-exports.listContact = async (req, res) => {
+exports.listVisionmission = async (req, res) => {
   try {
-    const list = await Contact.find().sort({ createdAt: -1 }).exec();
+    const list = await Visionmission.find().sort({ createdAt: -1 }).exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listActiveContact = async (req, res) => {
+exports.listActiveVisionmission = async (req, res) => {
   try {
-    const list = await Contact.find({ IsActive: true })
+    const list = await Visionmission.find({ IsActive: true })
       .sort({ createdAt: -1 })
       .exec();
-    console.log("list avi", list);
+    console.log("list vision mission", list);
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listContactByParams = async (req, res) => {
+exports.listVisionmissionByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
 
@@ -89,7 +91,7 @@ exports.listContactByParams = async (req, res) => {
           $match: {
             $or: [
               {
-                Contact: { $regex: match, $options: "i" },
+                vision: { $regex: match, $options: "i" },
               },
             ],
           },
@@ -115,7 +117,7 @@ exports.listContactByParams = async (req, res) => {
       ].concat(query);
     }
 
-    const list = await Contact.aggregate(query);
+    const list = await Visionmission.aggregate(query);
 
     res.json(list);
   } catch (error) {
@@ -123,9 +125,9 @@ exports.listContactByParams = async (req, res) => {
   }
 };
 
-exports.updateContactMaster = async (req, res) => {
+exports.updateVisionmission= async (req, res) => {
   try {
-    const update = await Contact.findOneAndUpdate(
+    const update = await Visionmission.findOneAndUpdate(
       { _id: req.params._id },
       req.body,
       { new: true }
@@ -136,9 +138,9 @@ exports.updateContactMaster = async (req, res) => {
   }
 };
 
-exports.removeContactMaster = async (req, res) => {
+exports.removeVisionmission = async (req, res) => {
   try {
-    const delTL = await Contact.deleteOne({
+    const delTL = await Visionmission.deleteOne({
       _id: req.params._id,
     });
     res.json(delTL);

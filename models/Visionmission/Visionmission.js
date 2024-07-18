@@ -1,18 +1,18 @@
 const mongoose = require("mongoose");
 const { Schema, model, Types } = require("mongoose");
-const ContactSchema = new mongoose.Schema(
+const VisionSchema = new mongoose.Schema(
   {
-    contactno: {
+    vision: {
       type: String,
+      require: true,
     },
-    address: {
+    mission: {
       type: String,
+      require: true,
     },
-    email: {
+    value: {
       type: String,
-    },
-    gmaplink: {
-      type: String,
+      require: true,
     },
     IsActive: {
       type: Boolean,
@@ -23,4 +23,4 @@ const ContactSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("ContactSchema", ContactSchema);
+module.exports = mongoose.model("Vision", VisionSchema);
