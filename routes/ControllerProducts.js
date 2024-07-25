@@ -26,7 +26,7 @@ router.post(
   upload.single("myFile"),
   catchAsync(createControllerProds)
 );
-y
+
 router.get("/auth/list/controllerproducts", catchAsync(listControllerProds));
 
 router.post(
