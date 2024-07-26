@@ -188,3 +188,166 @@ exports.updateUserProfile = async (req, res) => {
     }
   };
 // export { loginUser, registerUser };
+
+exports.listAllUsers = async (req, res) => {
+  try {
+      const users = await userModel.find();
+      res.json({ success: true, users });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Error fetching users" });
+  }
+};
+
+exports.updateAllUserValues = async (req, res) => {
+  const { id } = req.params;
+  const { name, email, phone, address, country, state, city, pincode, orderNotes, password } = req.body;
+
+  try {
+      // Find user
+      const user = await userModel.findById(id);
+      if (!user) {
+          return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      // Check if email is being updated and is unique
+      if (email && email !== user.email) {
+          const emailExists = await userModel.findOne({ email });
+          if (emailExists) {
+              return res.status(400).json({ success: false, message: "Email already in use" });
+          }
+      }
+
+      // Hash new password if provided
+      if (password) {
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(password, salt);
+      }
+
+      // Update user fields
+      user.name = name || user.name;
+      user.email = email || user.email;
+      user.phone = phone || user.phone;
+      user.address = address || user.address;
+      user.country = country || user.country;
+      user.state = state || user.state;
+      user.city = city || user.city;
+      user.pincode = pincode || user.pincode;
+      user.orderNotes = orderNotes || user.orderNotes;
+
+      // Save updated user
+      const updatedUser = await user.save();
+
+      res.json({ success: true, user: updatedUser });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Error updating user" });
+  }
+};
+
+
+// controllers/Users/Users.js
+
+
+exports.listUsersByParams = async (req, res) => {
+  try {
+    let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
+
+    let query = [
+      // {
+      //   $match: { IsActive: IsActive },
+      // },
+      {
+        $facet: {
+          stage1: [
+            {
+              $group: {
+                _id: null,
+                count: {
+                  $sum: 1,
+                },
+              },
+            },
+          ],
+          stage2: [
+            {
+              $skip: skip,
+            },
+            {
+              $limit: per_page,
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$stage1",
+        },
+      },
+      {
+        $project: {
+          count: "$stage1.count",
+          data: "$stage2",
+        },
+      },
+    ];
+
+    if (match) {
+      query = [
+        {
+          $match: {
+            $or: [
+              { name: { $regex: match, $options: "i" } },
+              { email: { $regex: match, $options: "i" } },
+              { phone: { $regex: match, $options: "i" } },
+            ],
+          },
+        },
+      ].concat(query);
+    }
+
+    let sort = {};
+    sort[sorton] = sortdir === "desc" ? -1 : 1;
+
+    query = [{ $sort: sort }].concat(query);
+
+    const list = await userModel.aggregate(query);
+
+    res.json(list);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Server error", error });
+  }
+};
+
+
+exports.deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Find and delete the user by ID
+    const user = await userModel.findByIdAndDelete(id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.json({ success: true, message: "User deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error", error });
+  }
+};
+
+exports.getUserById = async (req, res) => {
+  try {
+    const user = await userModel.findOne({ _id: req.params.id }).exec();
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send(error);
+  }
+};

@@ -4,15 +4,6 @@ const router = express.Router();
 
 const catchAsync = require("../utils/catchAsync");
 
-const {
-  removeNeonSignsCategoryMaster,
-  updateNeonSignsCategoryMaster,
-  getNeonSignsCategoryMaster,
-  listNeonSignsCategoryMasterByParams,
-  listNeonSignsActiveCategories,
-  listNeonSignsCategoryMaster,
-  createNeonSignsCategoryMaster,
-} = require("../controllers/Category/NeonSignsCategory");
 const { createProdCategoryMaster, listProdCategoryMaster, listProdActiveCategories, listProdCategoryMasterByParams, getProdCategoryMaster, updateProdCategoryMaster, removeProdCategoryMaster } = require("../controllers/Category/ProdCategory");
 
 router.post(
