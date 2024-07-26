@@ -1,37 +1,37 @@
-const Contact = require("../../models/ContactUs/Conatct");
-exports.createContact = async (req, res) => {
-  try {
-    const { contactno, address, email, gmaplink } = req.body;
-    const addContact = await new Contact(req.body).save();
-    console.log("create contact", addContact);
-    res.status(200).json({ isOk: true, data: addContact, message: "" });
-  } catch (err) {
-    res.status(200).json({ isOk: false, message: "Error creating contact" });
-  }
-};
+const LEDCategory = require("../../models/Category/LEDCategory");
+const ProdCategory = require("../../models/Category/ProdCategory");
 
-exports.getContact = async (req, res) => {
+exports.getProdCategoryMaster = async (req, res) => {
   try {
-    const find = await Contact.findOne({ _id: req.params._id }).exec();
+    const find = await ProdCategory.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
     return res.status(500).send(error);
   }
 };
 
-exports.listContact = async (req, res) => {
+exports.createProdCategoryMaster = async (req, res) => {
   try {
-    const list = await Contact.find().sort({ createdAt: -1 }).exec();
+    const add = await new ProdCategory(req.body).save();
+    res.json(add);
+  } catch (err) {
+    return res.status(400).send(err);
+  }
+};
+
+exports.listProdCategoryMaster = async (req, res) => {
+  try {
+    const list = await ProdCategory.find({ IsActive: true }).sort({ categoryName : 1 }).exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listActiveContact = async (req, res) => {
+exports.listProdActiveCategories = async (req, res) => {
   try {
-    const list = await Contact.find({ IsActive: true })
-      .sort({ createdAt: -1 })
+    const list = await ProdCategory.find({ IsActive: true })
+      .sort({ createdAt: 1 })
       .exec();
     console.log("list avi", list);
     res.json(list);
@@ -40,7 +40,7 @@ exports.listActiveContact = async (req, res) => {
   }
 };
 
-exports.listContactByParams = async (req, res) => {
+exports.listProdCategoryMasterByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
 
@@ -89,7 +89,7 @@ exports.listContactByParams = async (req, res) => {
           $match: {
             $or: [
               {
-                Contact: { $regex: match, $options: "i" },
+                categoryName: { $regex: match, $options: "i" },
               },
             ],
           },
@@ -115,7 +115,7 @@ exports.listContactByParams = async (req, res) => {
       ].concat(query);
     }
 
-    const list = await Contact.aggregate(query);
+    const list = await ProdCategory.aggregate(query);
 
     res.json(list);
   } catch (error) {
@@ -123,9 +123,9 @@ exports.listContactByParams = async (req, res) => {
   }
 };
 
-exports.updateContactMaster = async (req, res) => {
+exports.updateProdCategoryMaster = async (req, res) => {
   try {
-    const update = await Contact.findOneAndUpdate(
+    const update = await ProdCategory.findOneAndUpdate(
       { _id: req.params._id },
       req.body,
       { new: true }
@@ -136,9 +136,9 @@ exports.updateContactMaster = async (req, res) => {
   }
 };
 
-exports.removeContactMaster = async (req, res) => {
+exports.removeProdCategoryMaster = async (req, res) => {
   try {
-    const delTL = await Contact.deleteOne({
+    const delTL = await ProdCategory.deleteOne({
       _id: req.params._id,
     });
     res.json(delTL);

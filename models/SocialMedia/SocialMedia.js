@@ -1,17 +1,14 @@
 const mongoose = require("mongoose");
 const { Schema, model, Types } = require("mongoose");
-const ContactSchema = new mongoose.Schema(
+const SocialMediaSchema = new mongoose.Schema(
   {
-    contactno: {
+    facebook: {
       type: String,
     },
-    address: {
+    instagram: {
       type: String,
     },
-    email: {
-      type: String,
-    },
-    gmaplink: {
+    whatsapp: {
       type: String,
     },
     IsActive: {
@@ -23,4 +20,4 @@ const ContactSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("ContactSchema", ContactSchema);
+module.exports = mongoose.model("SocialMediaSchema", SocialMediaSchema);
